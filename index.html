@@ -725,6 +725,71 @@ body::after {
   transition: opacity 0.15s;
 }
 .ht-unlog-btn:hover { border-color: rgba(255,255,255,0.18); color: var(--text-secondary); }
+
+/* ===== Habit Insights ===== */
+.ht-toggle-btn {
+  width: 100%; text-align: center;
+  background: none; border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px; color: var(--text-tertiary);
+  font-size: 11px; font-weight: 700; letter-spacing: 0.10em;
+  text-transform: uppercase; padding: 11px;
+  cursor: pointer; margin-top: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+.ht-toggle-btn:hover { background: rgba(255,255,255,0.04); color: var(--text-secondary); }
+.ht-iblock {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px; padding: 16px;
+  margin-bottom: 10px; margin-top: 12px;
+}
+.ht-ilabel {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--text-tertiary);
+  margin-bottom: 14px;
+}
+.ht-stats-row { display: flex; gap: 10px; margin-bottom: 16px; }
+.ht-stat {
+  flex: 1; text-align: center;
+  background: rgba(255,255,255,0.03); border-radius: 10px; padding: 12px 6px;
+}
+.ht-stat-val {
+  font-family: var(--font-mono); font-size: 20px; font-weight: 700;
+  color: var(--text-primary); line-height: 1;
+}
+.ht-stat-lbl {
+  font-size: 9px; color: var(--text-tertiary);
+  margin-top: 5px; letter-spacing: 0.05em; text-transform: uppercase;
+}
+.ht-chart-wrap {
+  height: 60px; display: flex; align-items: flex-end; gap: 2px;
+}
+.ht-bar-col {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: flex-end; height: 100%;
+}
+.ht-bar { width: 100%; border-radius: 2px 2px 0 0; min-height: 2px; }
+.ht-bar-col.is-today .ht-bar { box-shadow: 0 0 7px rgba(107,227,164,0.45); }
+.ht-bar-lbl { font-size: 8px; color: var(--text-tertiary); margin-top: 5px; }
+.ht-bar-col.is-today .ht-bar-lbl { color: var(--text-secondary); font-weight: 700; }
+.ht-hlist { list-style: none; margin: 0; padding: 0; }
+.ht-hrow {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-size: 13px;
+}
+.ht-hrow:last-child { border-bottom: none; }
+.ht-hrow-name { flex: 1; color: var(--text-primary); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ht-hrow-stat { font-family: var(--font-mono); font-size: 11px; color: var(--text-tertiary); white-space: nowrap; }
+.ht-wk-dots { display: flex; gap: 4px; align-items: center; }
+.ht-wk-dot {
+  width: 11px; height: 11px; border-radius: 50%;
+  background: rgba(255,255,255,0.10); flex-shrink: 0;
+}
+.ht-wk-dot.met { background: var(--success); }
+.ht-wk-dot.partial { background: var(--warning); }
+.ht-wk-dot.current { outline: 2px solid rgba(255,255,255,0.25); outline-offset: 1px; }
+.ht-no-data { font-size: 13px; color: var(--text-tertiary); font-style: italic; padding: 2px 0; }
 </style>
 </head>
 <body>
@@ -859,6 +924,18 @@ body::after {
           <option value="7">7×/wk</option>
         </select>
         <button class="ht-add-btn" id="htWeeklyAdd" type="button">+ Add</button>
+      </div>
+    </div>
+
+    <button class="ht-toggle-btn" id="htInsightsToggle" type="button">View Insights ▾</button>
+    <div id="htInsightsPanel" style="display:none">
+      <div class="ht-iblock">
+        <div class="ht-ilabel">Daily — last 14 days</div>
+        <div id="htIDailyContent"></div>
+      </div>
+      <div class="ht-iblock">
+        <div class="ht-ilabel">Weekly — last 6 weeks</div>
+        <div id="htIWeeklyContent"></div>
       </div>
     </div>
   </div>
@@ -1590,6 +1667,139 @@ body::after {
     wIn.addEventListener('keydown', e => { if (e.key==='Enter') addWeekly(); });
   })();
 
+  // ===== HABIT INSIGHTS =====
+  let htInsightsOpen = false;
+
+  function htBarColor(pct) {
+    if (pct >= 1)   return 'var(--success)';
+    if (pct >= 0.5) return 'var(--warning)';
+    if (pct > 0)    return 'rgba(255,107,107,0.65)';
+    return 'rgba(255,255,255,0.08)';
+  }
+
+  function htRenderInsights() {
+    const habits  = htGet(HT_DAILY_KEY) || [];
+    const wHabits = htGet(HT_WEEKLY_KEY) || [];
+    const total   = habits.length;
+
+    // Build 14-day dataset
+    const now  = new Date();
+    const base = new Date(now);
+    if (now.getHours() < 6) base.setDate(base.getDate() - 1);
+    const days = [];
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date(base);
+      d.setDate(d.getDate() - i);
+      const key     = dateToKey(d);
+      const doneArr = htGet(HT_DONE_PRE + key) || [];
+      days.push({ d, key, done: doneArr.length, doneSet: new Set(doneArr), isToday: i === 0 });
+    }
+
+    // Aggregates
+    const todayDay = days[days.length - 1];
+    const todayPct = total > 0 ? Math.round(todayDay.done / total * 100) : 0;
+    const avg7pct  = total > 0
+      ? Math.round(days.slice(-7).reduce((s, d) => s + d.done, 0) / (7 * total) * 100) : 0;
+    let streak = 0;
+    if (total > 0) {
+      for (let i = days.length - 1; i >= 0; i--) {
+        if (days[i].done >= total) streak++; else break;
+      }
+    }
+
+    // --- Daily block ---
+    const dEl = document.getElementById('htIDailyContent');
+    if (!total) {
+      dEl.innerHTML = '<p class="ht-no-data">No daily habits added yet.</p>';
+    } else {
+      const DAY_INIT = ['S','M','T','W','T','F','S'];
+      const bars = days.map(day => {
+        const pct = total > 0 ? day.done / total : 0;
+        const h   = Math.max(pct > 0 ? 3 : 2, Math.round(pct * 52));
+        const dt  = day.d.toLocaleDateString('en', { month: 'short', day: 'numeric' });
+        return `<div class="ht-bar-col${day.isToday ? ' is-today' : ''}" title="${day.done}/${total} · ${dt}">
+          <div class="ht-bar" style="height:${h}px;background:${htBarColor(pct)}"></div>
+          <div class="ht-bar-lbl">${DAY_INIT[day.d.getDay()]}</div>
+        </div>`;
+      }).join('');
+
+      const habitRows = habits.map(h => {
+        let hs = 0;
+        for (let i = days.length - 1; i >= 0; i--) {
+          if (days[i].doneSet.has(h.id)) hs++; else break;
+        }
+        const doneTd = todayDay.doneSet.has(h.id);
+        return `<li class="ht-hrow">
+          <span class="ht-hrow-name">${htEsc(h.text)}</span>
+          <span class="ht-hrow-stat">${hs > 0 ? '🔥' : '·'} ${hs}d &nbsp; ${doneTd ? '✓' : '·'} today</span>
+        </li>`;
+      }).join('');
+
+      dEl.innerHTML =
+        `<div class="ht-stats-row">
+          <div class="ht-stat">
+            <div class="ht-stat-val">${todayPct}%</div>
+            <div class="ht-stat-lbl">Today</div>
+          </div>
+          <div class="ht-stat">
+            <div class="ht-stat-val">${avg7pct}%</div>
+            <div class="ht-stat-lbl">7-day avg</div>
+          </div>
+          <div class="ht-stat">
+            <div class="ht-stat-val">${streak}</div>
+            <div class="ht-stat-lbl">${streak > 0 ? '🔥 ' : ''}Day streak</div>
+          </div>
+        </div>
+        <div class="ht-chart-wrap">${bars}</div>
+        <ul class="ht-hlist" style="margin-top:14px">${habitRows}</ul>`;
+    }
+
+    // --- Weekly block ---
+    const wEl = document.getElementById('htIWeeklyContent');
+    if (!wHabits.length) {
+      wEl.innerHTML = '<p class="ht-no-data">No weekly habits added yet.</p>';
+    } else {
+      // 6-week dataset, anchored on this Monday
+      const thisMon = new Date();
+      thisMon.setDate(thisMon.getDate() - (thisMon.getDay() + 6) % 7);
+      thisMon.setHours(0, 0, 0, 0);
+      const weeks = [];
+      for (let w = 5; w >= 0; w--) {
+        const mon = new Date(thisMon);
+        mon.setDate(mon.getDate() - w * 7);
+        const wKey = dateToKey(mon);
+        weeks.push({ wKey, log: htGet(HT_WLOG_PRE + wKey) || {}, isCurrent: w === 0 });
+      }
+
+      const wRows = wHabits.map(h => {
+        const dots = weeks.map(wk => {
+          const done = wk.log[h.id] || 0;
+          const cls  = done >= h.target ? 'met' : done > 0 ? 'partial' : '';
+          const cur  = wk.isCurrent ? ' current' : '';
+          return `<span class="ht-wk-dot ${cls}${cur}" title="${done}/${h.target} · ${wk.wKey}"></span>`;
+        }).join('');
+        const thisDone = weeks[5].log[h.id] || 0;
+        return `<li class="ht-hrow">
+          <span class="ht-hrow-name">${htEsc(h.text)}</span>
+          <div class="ht-wk-dots">${dots}</div>
+          <span class="ht-hrow-stat">${thisDone}/${h.target}</span>
+        </li>`;
+      }).join('');
+      wEl.innerHTML = `<ul class="ht-hlist">${wRows}</ul>`;
+    }
+  }
+
+  (function htInsightsWire() {
+    const btn   = document.getElementById('htInsightsToggle');
+    const panel = document.getElementById('htInsightsPanel');
+    btn.addEventListener('click', () => {
+      htInsightsOpen = !htInsightsOpen;
+      panel.style.display = htInsightsOpen ? 'block' : 'none';
+      btn.textContent = htInsightsOpen ? 'Hide Insights ▴' : 'View Insights ▾';
+      if (htInsightsOpen) htRenderInsights();
+    });
+  })();
+
   // ---------- Boot ----------
   rollover();
   processStreak();
@@ -1606,6 +1816,7 @@ body::after {
   window.addEventListener('storage', () => {
     loadToday(); loadTomorrow(); renderStreak();
     htRenderDaily(); htRenderWeekly();
+    if (htInsightsOpen) htRenderInsights();
   });
 })();
 </script>
