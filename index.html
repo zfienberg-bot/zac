@@ -593,6 +593,138 @@ body::after {
   .gm-card { padding: 16px; }
   .gm-progress-num { font-size: 36px; }
 }
+
+/* ===== Habit Tracker ===== */
+.ht-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 12px;
+}
+.ht-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.ht-header-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--text-tertiary);
+}
+.ht-header-count {
+  font-family: var(--font-mono);
+  font-size: 12px; color: var(--text-secondary);
+}
+.ht-list { list-style: none; margin: 0; padding: 0; }
+.ht-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.ht-item:last-child { border-bottom: none; }
+.ht-check {
+  width: 22px; height: 22px; flex-shrink: 0;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 6px;
+  background: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: transparent;
+  transition: background 0.15s, border-color 0.15s;
+  font-size: 13px; font-weight: 700; line-height: 1;
+  padding: 0;
+}
+.ht-check.done {
+  background: var(--success); border-color: var(--success); color: #050506;
+}
+.ht-item-text {
+  flex: 1; font-size: 14px; color: var(--text-primary);
+  transition: opacity 0.2s;
+}
+.ht-item-text.done { opacity: 0.38; text-decoration: line-through; }
+.ht-del {
+  background: none; border: none; cursor: pointer;
+  color: var(--text-tertiary); font-size: 18px; padding: 2px 6px;
+  opacity: 0; transition: opacity 0.15s; line-height: 1;
+}
+.ht-item:hover .ht-del,
+.ht-weekly-item:hover .ht-del { opacity: 1; }
+@media (hover: none) { .ht-del { opacity: 0.35; } }
+.ht-empty {
+  padding: 10px 0; font-size: 13px;
+  color: var(--text-tertiary); font-style: italic;
+}
+.ht-add-wrap {
+  display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap;
+}
+.ht-input {
+  flex: 1; min-width: 0;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px; padding: 9px 12px;
+  color: var(--text-primary); font-size: 14px; font-family: inherit;
+  outline: none;
+}
+.ht-input:focus { border-color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.07); }
+.ht-input::placeholder { color: var(--text-tertiary); }
+.ht-freq {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px; padding: 9px 10px;
+  color: var(--text-primary); font-size: 13px; font-family: inherit;
+  outline: none; cursor: pointer; flex-shrink: 0;
+}
+.ht-freq option { background: #111114; }
+.ht-add-btn {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 10px; color: var(--text-primary);
+  font-size: 13px; font-weight: 600;
+  padding: 9px 14px; cursor: pointer; white-space: nowrap;
+  transition: background 0.15s;
+}
+.ht-add-btn:hover { background: rgba(255,255,255,0.12); }
+/* Weekly */
+.ht-weekly-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.ht-weekly-item:last-child { border-bottom: none; }
+.ht-weekly-info { flex: 1; min-width: 0; }
+.ht-weekly-name { font-size: 14px; color: var(--text-primary); margin-bottom: 6px; }
+.ht-pips { display: flex; gap: 4px; flex-wrap: wrap; }
+.ht-pip {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  transition: background 0.2s;
+}
+.ht-pip.filled { background: var(--success); }
+.ht-weekly-right {
+  display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+}
+.ht-wcount {
+  font-family: var(--font-mono); font-size: 12px;
+  color: var(--text-secondary); min-width: 26px; text-align: right;
+}
+.ht-log-btn {
+  background: rgba(107,227,164,0.10);
+  border: 1px solid rgba(107,227,164,0.20);
+  border-radius: 8px; color: var(--success);
+  font-size: 17px; font-weight: 700;
+  width: 32px; height: 32px; padding: 0;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, transform 0.1s;
+}
+.ht-log-btn:hover { background: rgba(107,227,164,0.20); }
+.ht-log-btn:active { transform: scale(0.88); }
+.ht-unlog-btn {
+  background: none; border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px; color: var(--text-tertiary);
+  font-size: 15px; font-weight: 700;
+  width: 28px; height: 28px; padding: 0;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.15s;
+}
+.ht-unlog-btn:hover { border-color: rgba(255,255,255,0.18); color: var(--text-secondary); }
 </style>
 </head>
 <body>
@@ -687,6 +819,46 @@ body::after {
         <button type="button" id="tomorrowAddBtn"    class="gm-add">+ Add</button>
         <button type="button" id="tomorrowPolishBtn" class="gm-polish">✨ Polish</button>
         <div class="gm-status" id="tomorrowStatus"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HABITS -->
+  <div class="section" style="margin-top: 24px;">
+    <div class="section-title">Habits</div>
+
+    <div class="ht-card">
+      <div class="ht-header">
+        <span class="ht-header-label">Daily</span>
+        <span class="ht-header-count" id="htDailyCount"></span>
+      </div>
+      <ul class="ht-list" id="htDailyList"></ul>
+      <div class="ht-empty" id="htDailyEmpty">No daily habits yet — add one below.</div>
+      <div class="ht-add-wrap">
+        <input class="ht-input" id="htDailyInput" type="text" placeholder="Add a daily habit…" autocomplete="off">
+        <button class="ht-add-btn" id="htDailyAdd" type="button">+ Add</button>
+      </div>
+    </div>
+
+    <div class="ht-card">
+      <div class="ht-header">
+        <span class="ht-header-label">Weekly</span>
+        <span class="ht-header-count" id="htWeeklyCount"></span>
+      </div>
+      <ul class="ht-list" id="htWeeklyList"></ul>
+      <div class="ht-empty" id="htWeeklyEmpty">No weekly habits yet — add one below.</div>
+      <div class="ht-add-wrap">
+        <input class="ht-input" id="htWeeklyInput" type="text" placeholder="Add a weekly habit…" autocomplete="off">
+        <select class="ht-freq" id="htWeeklyFreq">
+          <option value="1">1×/wk</option>
+          <option value="2">2×/wk</option>
+          <option value="3" selected>3×/wk</option>
+          <option value="4">4×/wk</option>
+          <option value="5">5×/wk</option>
+          <option value="6">6×/wk</option>
+          <option value="7">7×/wk</option>
+        </select>
+        <button class="ht-add-btn" id="htWeeklyAdd" type="button">+ Add</button>
       </div>
     </div>
   </div>
@@ -1291,6 +1463,133 @@ body::after {
     loadTomorrow
   );
 
+  // ===== HABIT TRACKER =====
+  const HT_DAILY_KEY   = 'habits:daily';   // [{id, text}]
+  const HT_DONE_PRE    = 'habits:done:';   // + YYYY-MM-DD → [id,…]
+  const HT_WEEKLY_KEY  = 'habits:weekly';  // [{id, text, target}]
+  const HT_WLOG_PRE    = 'habits:wlog:';   // + YYYY-MM-DD (Monday) → {id: count}
+
+  function htEsc(s) {
+    return String(s).replace(/[&<>"']/g, c =>
+      ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function htGet(k)      { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
+  function htSet(k, v)   { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+  function htNewId()     { return 'h' + Date.now() + '_' + Math.random().toString(36).slice(2,7); }
+  function htMondayKey() {
+    const d = new Date();
+    const diff = (d.getDay() + 6) % 7; // days since Monday (Mon=0)
+    d.setDate(d.getDate() - diff);
+    return dateToKey(d);
+  }
+
+  function htRenderDaily() {
+    const habits  = htGet(HT_DAILY_KEY) || [];
+    const doneIds = new Set(htGet(HT_DONE_PRE + getActiveDateString()) || []);
+    const listEl  = document.getElementById('htDailyList');
+    const emptyEl = document.getElementById('htDailyEmpty');
+    const countEl = document.getElementById('htDailyCount');
+    const doneN   = habits.filter(h => doneIds.has(h.id)).length;
+    countEl.textContent = habits.length ? doneN + '/' + habits.length + ' done' : '';
+    emptyEl.style.display = habits.length ? 'none' : 'block';
+    listEl.innerHTML = habits.map(h => {
+      const done = doneIds.has(h.id);
+      return `<li class="ht-item">
+        <button class="ht-check${done?' done':''}" data-hid="${h.id}" type="button">${done?'✓':''}</button>
+        <span class="ht-item-text${done?' done':''}">${htEsc(h.text)}</span>
+        <button class="ht-del" data-hdel="${h.id}" type="button" aria-label="Delete">×</button>
+      </li>`;
+    }).join('');
+    listEl.querySelectorAll('.ht-check').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const arr  = htGet(HT_DONE_PRE + getActiveDateString()) || [];
+        const idx  = arr.indexOf(btn.dataset.hid);
+        if (idx === -1) arr.push(btn.dataset.hid); else arr.splice(idx, 1);
+        htSet(HT_DONE_PRE + getActiveDateString(), arr);
+        htRenderDaily();
+      });
+    });
+    listEl.querySelectorAll('.ht-del').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const list = (htGet(HT_DAILY_KEY) || []).filter(h => h.id !== btn.dataset.hdel);
+        htSet(HT_DAILY_KEY, list); htRenderDaily();
+      });
+    });
+  }
+
+  function htRenderWeekly() {
+    const habits  = htGet(HT_WEEKLY_KEY) || [];
+    const log     = htGet(HT_WLOG_PRE + htMondayKey()) || {};
+    const listEl  = document.getElementById('htWeeklyList');
+    const emptyEl = document.getElementById('htWeeklyEmpty');
+    const countEl = document.getElementById('htWeeklyCount');
+    const metN    = habits.filter(h => (log[h.id]||0) >= h.target).length;
+    countEl.textContent = habits.length ? metN + '/' + habits.length + ' on track' : '';
+    emptyEl.style.display = habits.length ? 'none' : 'block';
+    listEl.innerHTML = habits.map(h => {
+      const done = log[h.id] || 0;
+      const pips = Array.from({length: h.target}, (_,i) =>
+        `<span class="ht-pip${i<done?' filled':''}"></span>`).join('');
+      return `<li class="ht-weekly-item">
+        <div class="ht-weekly-info">
+          <div class="ht-weekly-name">${htEsc(h.text)}</div>
+          <div class="ht-pips">${pips}</div>
+        </div>
+        <div class="ht-weekly-right">
+          <span class="ht-wcount">${done}/${h.target}</span>
+          ${done>0?`<button class="ht-unlog-btn" data-wun="${h.id}" type="button" aria-label="Undo">−</button>`:''}
+          <button class="ht-log-btn" data-wid="${h.id}" type="button" aria-label="Log one">+</button>
+          <button class="ht-del" data-wdel="${h.id}" type="button" aria-label="Delete">×</button>
+        </div>
+      </li>`;
+    }).join('');
+    listEl.querySelectorAll('.ht-log-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const l = htGet(HT_WLOG_PRE + htMondayKey()) || {};
+        l[btn.dataset.wid] = (l[btn.dataset.wid]||0) + 1;
+        htSet(HT_WLOG_PRE + htMondayKey(), l); htRenderWeekly();
+      });
+    });
+    listEl.querySelectorAll('.ht-unlog-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const l = htGet(HT_WLOG_PRE + htMondayKey()) || {};
+        l[btn.dataset.wun] = Math.max(0, (l[btn.dataset.wun]||0) - 1);
+        htSet(HT_WLOG_PRE + htMondayKey(), l); htRenderWeekly();
+      });
+    });
+    listEl.querySelectorAll('[data-wdel]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const list = (htGet(HT_WEEKLY_KEY)||[]).filter(h => h.id !== btn.dataset.wdel);
+        htSet(HT_WEEKLY_KEY, list); htRenderWeekly();
+      });
+    });
+  }
+
+  (function htWire() {
+    const dIn  = document.getElementById('htDailyInput');
+    const dBtn = document.getElementById('htDailyAdd');
+    function addDaily() {
+      const t = dIn.value.trim(); if (!t) return;
+      const list = htGet(HT_DAILY_KEY) || [];
+      list.push({ id: htNewId(), text: t });
+      htSet(HT_DAILY_KEY, list); dIn.value = ''; htRenderDaily();
+    }
+    dBtn.addEventListener('click', addDaily);
+    dIn.addEventListener('keydown', e => { if (e.key==='Enter') addDaily(); });
+
+    const wIn   = document.getElementById('htWeeklyInput');
+    const wFreq = document.getElementById('htWeeklyFreq');
+    const wBtn  = document.getElementById('htWeeklyAdd');
+    function addWeekly() {
+      const t = wIn.value.trim(); if (!t) return;
+      const list = htGet(HT_WEEKLY_KEY) || [];
+      list.push({ id: htNewId(), text: t, target: parseInt(wFreq.value,10)||3 });
+      htSet(HT_WEEKLY_KEY, list); wIn.value = ''; htRenderWeekly();
+    }
+    wBtn.addEventListener('click', addWeekly);
+    wIn.addEventListener('keydown', e => { if (e.key==='Enter') addWeekly(); });
+  })();
+
   // ---------- Boot ----------
   rollover();
   processStreak();
@@ -1300,10 +1599,13 @@ body::after {
   updateDayRing();
   setInterval(updateDayRing, 60 * 1000);
   startTicker();
+  htRenderDaily();
+  htRenderWeekly();
 
   // Re-render when storage changes from another tab (or our bridged parent).
   window.addEventListener('storage', () => {
     loadToday(); loadTomorrow(); renderStreak();
+    htRenderDaily(); htRenderWeekly();
   });
 })();
 </script>
@@ -1312,7 +1614,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (typeof initCloudSync !== 'function') return;
   initCloudSync({
     appKey: 'goals',
-    syncedPrefixes: ['goals:'],
+    syncedPrefixes: ['goals:', 'habits:'],
     onApplied: function () {
       window.dispatchEvent(new CustomEvent('goals-changed'));
       window.dispatchEvent(new Event('storage'));
